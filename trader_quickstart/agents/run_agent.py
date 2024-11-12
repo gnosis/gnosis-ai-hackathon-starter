@@ -1,7 +1,7 @@
 # Important to load this before loading PMAT.
 from dotenv import load_dotenv
 load_dotenv()
-from trader_quickstart.agents.llm_agent import LLM
+from trader_quickstart.agents.agent_with_tavily import AgentWithTavily
 from trader_quickstart.utils import print_positions_from_user
 from prediction_market_agent_tooling.markets.omen.omen_contracts import (
     OmenConditionalTokenContract,
@@ -16,7 +16,8 @@ if __name__ == "__main__":
     print(f"provider {w3.provider.endpoint_uri}")  # type: ignore
 
     # agent = Coinflip()
-    agent = LLM()
+    # agent = LLM()
+    agent = AgentWithTavily()
     # Run once
     agent.deploy_local(market_type=MarketType.OMEN, sleep_time=0.01, timeout=0)
 
