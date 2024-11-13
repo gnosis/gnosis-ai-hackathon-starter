@@ -11,6 +11,7 @@ from prediction_market_agent_tooling.deploy.agent import (
     AgentMarket,
     ProbabilisticAnswer,
 )
+from prediction_market_agent_tooling.deploy.agent import MarketType
 from prediction_market_agent_tooling.deploy.betting_strategy import (
     BettingStrategy,
     KellyBettingStrategy,
@@ -87,4 +88,4 @@ OUTPUT_FORMAT:
         return KellyBettingStrategy(max_bet_amount=0.001)
 
 
-MyAgent().run(market_type=prediction_market_agent_tooling.deploy.agent.MarketType.OMEN)
+MyAgent().run(market_type=MarketType.OMEN)
