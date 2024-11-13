@@ -56,4 +56,8 @@ Then you can set `BET_FROM_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb47
 
 ## Task
 
-Implement the agent in `main.py` using [the PMAT library](https://github.com/gnosis/prediction-market-agent-tooling) and feel free to take the inspiration from [the existing agents ](https://github.com/gnosis/prediction-market-agent).
+Implement the agent in `main.py` using [the PMAT library](https://github.com/gnosis/prediction-market-agent-tooling).
+
+Finished implementation can be found [here](https://github.com/gnosis/gnosis-ai-hackathon-starter/tree/step-4/trader_quickstart/agents).
+
+Full-fledged agents that Gnosis AI runs can be found in https://github.com/gnosis/prediction-market-agent.
