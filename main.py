@@ -1,5 +1,4 @@
 import prediction_market_agent_tooling
-
 import prediction_market_agent_tooling.deploy
 import prediction_market_agent_tooling.deploy.agent
 from dotenv import load_dotenv
@@ -15,4 +14,3 @@ class MyAgent(prediction_market_agent_tooling.deploy.agent.DeployableTraderAgent
 
     Full-fledged agents that Gnosis AI runs can be found in https://github.com/gnosis/prediction-market-agent.
     """
-

@@ -1,0 +1,90 @@
+import prediction_market_agent_tooling
+import prediction_market_agent_tooling.deploy
+import prediction_market_agent_tooling.deploy.agent
+from dotenv import load_dotenv
+from langchain_core.output_parsers import PydanticOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_openai import ChatOpenAI
+from prediction_market_agent_tooling.config import APIKeys
+from prediction_market_agent_tooling.loggers import logger
+from prediction_market_agent_tooling.deploy.agent import (
+    AgentMarket,
+    ProbabilisticAnswer,
+)
+from prediction_market_agent_tooling.deploy.betting_strategy import (
+    BettingStrategy,
+    KellyBettingStrategy,
+)
+from prediction_market_agent_tooling.markets.agent_market import AgentMarket
+from prediction_market_agent_tooling.markets.data_models import ProbabilisticAnswer
+from prediction_market_agent_tooling.tools.tavily.tavily_search import tavily_search
+
+load_dotenv()
+
+
+class MyAgent(prediction_market_agent_tooling.deploy.agent.DeployableTraderAgent):
+    """
+    TODO: Implement market betting agent.
+
+    Step-by-step implementations can be found at https://github.com/gnosis/gnosis-ai-hackathon-starter/tree/step-4/trader_quickstart/agents.
+
+    Full-fledged agents that Gnosis AI runs can be found in https://github.com/gnosis/prediction-market-agent.
+    """
+
+    def load(self) -> None:
+        super().load()
+        keys = APIKeys()
+        self.agent = ChatOpenAI(
+            model="gpt-4o",
+            api_key=keys.openai_api_key_secretstr_v1,
+        )
+
+    def answer_binary_market(self, market: AgentMarket) -> ProbabilisticAnswer | None:
+        # Search on Tavily for recent news
+        response = tavily_search(market.question)
+        tavily_content = "\n".join(r.content for r in response.results)
+        logger.info(tavily_content)
+
+        # Prepare prompt for the LLM
+        parser = PydanticOutputParser(pydantic_object=ProbabilisticAnswer)
+        prediction_prompt = ChatPromptTemplate.from_template(
+            template="""INTRODUCTION:
+Your primary task is to accurately estimate the probabilities for the outcome of a 'market question',
+found in 'MARKET_QUESTION'. The market question is part of a prediction market, where users can place bets on the outcomes of market questions and earn rewards if the selected outcome occurrs. The 'market question'
+in this scenario has only two possible outcomes: `Yes` or `No`. 
+Each market has a closing date at which the outcome is evaluated. 
+This date is stated within the market question.
+
+MARKET_QUESTION:
+```
+{market_question}
+```
+
+MARKET_CONTEXT:
+```
+{tavily_content}
+```
+
+OUTPUT_FORMAT:
+{format_instructions}
+""",
+        )
+
+        # And call the model
+        prompt_and_model = prediction_prompt | self.agent
+        llm_output = prompt_and_model.invoke(
+            {
+                "format_instructions": parser.get_format_instructions(),
+                "market_question": market.question,
+                "tavily_content": tavily_content,
+            }
+        )
+        structured_output: ProbabilisticAnswer = parser.invoke(llm_output)
+
+        return structured_output
+
+    def get_betting_strategy(self, market: AgentMarket) -> BettingStrategy:
+        return KellyBettingStrategy(max_bet_amount=0.001)
+
+
+MyAgent().run(market_type=prediction_market_agent_tooling.deploy.agent.MarketType.OMEN)
