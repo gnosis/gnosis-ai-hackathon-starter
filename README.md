@@ -40,7 +40,7 @@ Again, everyone is welcome to use arbitrary search engines, combine them, or eve
 
 Use your existing or create a new wallet on Gnosis Chain. 
 
-By default the script will do only very tiny bets (0.00001 xDai per market), but of course, you can contact us on the TG group above with your public key to get some free xDai.
+By default agents will do only very tiny bets (0.00001 xDai per market), but of course, you can contact us on the TG group above with your public key to get some free xDai.
 
 #### Anvil network
 
